@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic.list import ListView
-from fire.models import Locations, Incident
+from fire.models import Locations, Incident, FireStation
 
 
 class HomePageView(ListView):
@@ -133,6 +133,20 @@ def MultilineIncidentTop3Country(request):
         result[country] = dict(sorted(result[country].items()))
 
     return JsonResponse(result)
+def map_station(request):
+     fireStations = FireStation.objects.values('name', 'latitude', 'longitude')
+
+     for fs in fireStations:
+         fs['latitude'] = float(fs['latitude'])
+         fs['longitude'] = float(fs['longitude'])
+
+     fireStations_list = list(fireStations)
+
+     context = {
+         'fireStations': fireStations_list,
+     }
+
+     return render(request, 'map_station.html', context)
 
 def multipleBarbySeverity(request):
     query = '''
